@@ -2,7 +2,7 @@
 from Bio import SeqIO
 import os
 #Задание 1
-# Скрипт для вычисления GC-состава GenBank файлов
+#скрипт для вычисления GC-состава GenBank файлов
 
 
 def calculate_gc(seq):
@@ -16,7 +16,7 @@ def process_gb_file(gb_file, organism="Ananas comosus"):
   #считывает GenBank файл, считает GC для каждой последовательности, фильтрует по организму и выводит отсортированные результаты.
   seqs_with_gc = []
   for rec in SeqIO.parse(gb_file, "genbank"):
-    # ищет наш организм
+    #ищет наш организм
     if organism in rec.description:
       gc = calculate_gc(rec.seq)
       seqs_with_gc.append((rec.id, rec.description, gc, str(rec.seq)))
@@ -30,7 +30,7 @@ def process_gb_file(gb_file, organism="Ananas comosus"):
     print("%s: %s, GC = %.2f" % (id, desc, gc))
 
 gb_file = r"d:\reflection\ananas comosus.gb"
-organism = "Ananas comosus" # Наш любимый ананас
+organism = "Ananas comosus" 
 
 process_gb_file(gb_file, organism)
 
@@ -47,7 +47,7 @@ def translate_cds(rec, organism="Ananas comosus"):
         for feat in rec.features:
             if feat.type == "CDS":
                 try:
-                    # Собираем CDS из экзонов, если они есть
+                    #собирает CDS из экзонов, если они есть
                     cds_seq = ""
                     for part in feat.location.parts:
                         sub_seq = part.extract(rec.seq)
@@ -55,15 +55,15 @@ def translate_cds(rec, organism="Ananas comosus"):
                             sub_seq = sub_seq.reverse_complement()
                         cds_seq += str(sub_seq)
 
-                    # Учитываем codon_start, если он есть
+                    #учитывает codon_start, если он есть
                     codon_start = int(feat.qualifiers.get("codon_start", [1])[0]) - 1
                     cds_seq = cds_seq[codon_start:]
 
-                    # Трансляция
+                    #трансляция
                     transl_table = int(feat.qualifiers.get("transl_table", [1])[0])
                     prot_seq = Seq(cds_seq).translate(table=transl_table, to_stop=True)
 
-                    # Местоположение тоже надо
+                    #местоположение тоже надо
                     loc = f"[{feat.location.start}:{feat.location.end}] ({'+' if feat.strand == 1 else '-'})"
                     translations.append((loc, str(prot_seq)))
                 except Exception as e:
@@ -76,7 +76,7 @@ def translate_cds(rec, organism="Ananas comosus"):
 gb_file = r"d:\reflection\ananas comosus.gb"
 org = "Ananas comosus" 
 
-# Читка и вывод
+#читка и вывод
 for rec in SeqIO.parse(gb_file, "genbank"):
     print(f"\n{rec.id}: {rec.description}")
     translations = translate_cds(rec, org)
